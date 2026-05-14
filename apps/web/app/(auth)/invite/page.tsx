@@ -67,7 +67,7 @@ const hydrateInviteSessionFromUrl = async (invitationId: string | null) => {
 export default function InvitePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const invitationId = searchParams.get("invitation");
+  const invitationId = searchParams?.get("invitation") ?? null;
   const [invitation, setInvitation] = useState<PublicInvitation | null>(null);
   const [ready, setReady] = useState(false);
   const [loading, setLoading] = useState(false);
