@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 export default function NotFound() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-50 px-6">
@@ -10,18 +8,18 @@ export default function NotFound() {
           The page you were trying to reach does not exist or may have moved.
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
-          <Link
+          <a
             href="/"
             className="inline-flex items-center justify-center rounded-2xl bg-slate-950 px-5 py-3 text-sm font-medium text-white"
           >
             Go home
-          </Link>
-          <Link
+          </a>
+          <a
             href="/login"
             className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-medium text-slate-700"
           >
             Back to login
-          </Link>
+          </a>
         </div>
       </div>
     </main>
