@@ -16,6 +16,12 @@
     "db:push": "npm run push --workspace=@acme/db",
     "db:seed": "npm run seed --workspace=@acme/db"
   },
+  "overrides": {
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "@types/react": "19.1.0",
+    "@types/react-dom": "19.1.0"
+  },
   "devDependencies": {
     "turbo": "^2.0.14",
     "typescript": "^5.6.3"
