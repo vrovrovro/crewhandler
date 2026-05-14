@@ -1,0 +1,54 @@
+# Monorepo Folder Structure
+
+```text
+apps/
+  api/
+    src/
+      lib/
+      modules/
+        auth/
+        clients/
+        dashboard/
+        interventions/
+        invoices/
+      plugins/
+  web/
+    app/
+      (app)/
+        dashboard/
+        clients/
+        interventions/
+        calendar/
+        invoices/
+      (auth)/
+        login/
+    components/
+      dashboard/
+      forms/
+      layout/
+      tables/
+    lib/
+  mobile/
+    app/
+      (tabs)/
+      job/[id].tsx
+    components/
+    lib/
+packages/
+  shared/
+    src/
+      contracts/
+      domain/
+      schemas/
+      utils/
+  db/
+    sql/
+    src/
+  ui/
+    src/
+  config/
+    tailwind/
+docs/
+legacy/
+  browser-extension/
+```

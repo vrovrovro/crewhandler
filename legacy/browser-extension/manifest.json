@@ -1,0 +1,46 @@
+{
+  "manifest_version": 3,
+  "name": "Hand Gesture Browser Control",
+  "description": "Control a virtual cursor, scrolling, clicks, and browser navigation using hand gestures through your webcam.",
+  "version": "1.0.0",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "styles.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "page-bridge.js",
+        "node_modules/@mediapipe/camera_utils/camera_utils.js",
+        "node_modules/@mediapipe/hands/*"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ]
+}

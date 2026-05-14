@@ -1,0 +1,22 @@
+{
+  "name": "@acme/db",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "push": "echo \"Apply packages/db/sql/schema.sql in your Supabase SQL editor or via the Supabase CLI.\"",
+    "seed": "echo \"Apply packages/db/sql/seed.sql in your Supabase SQL editor or via the Supabase CLI.\"",
+    "build": "tsc -p tsconfig.json --noEmit false",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "echo \"No tests configured for @acme/db\""
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.8"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  }
+}

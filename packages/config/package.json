@@ -1,0 +1,14 @@
+{
+  "name": "@acme/config",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "tailwind/web.ts",
+  "types": "tailwind/web.ts",
+  "scripts": {
+    "build": "echo \"No build step for @acme/config\"",
+    "lint": "echo \"No lint step for @acme/config\"",
+    "typecheck": "echo \"No typecheck step for @acme/config\"",
+    "test": "echo \"No tests configured for @acme/config\""
+  }
+}

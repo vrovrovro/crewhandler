@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hand Gesture Control</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f4ed;
+        --panel: #fffaf0;
+        --text: #1f2933;
+        --muted: #52606d;
+        --accent: #d9822b;
+        --accent-strong: #b95f0f;
+        --border: rgba(31, 41, 51, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-width: 320px;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: radial-gradient(circle at top, #fff7df, var(--bg) 70%);
+        color: var(--text);
+      }
+
+      .popup {
+        padding: 16px;
+      }
+
+      h1 {
+        margin: 0 0 12px;
+        font-size: 18px;
+      }
+
+      p {
+        margin: 0 0 16px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.45;
+      }
+
+      .card {
+        background: rgba(255, 250, 240, 0.88);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 14px;
+        backdrop-filter: blur(8px);
+        box-shadow: 0 12px 30px rgba(31, 41, 51, 0.08);
+      }
+
+      .row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+
+      .row:last-child {
+        margin-bottom: 0;
+      }
+
+      .label {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .label strong {
+        font-size: 13px;
+      }
+
+      .label span {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: #9aa5b1;
+      }
+
+      .dot.active {
+        background: #1f9d55;
+        box-shadow: 0 0 0 6px rgba(31, 157, 85, 0.15);
+      }
+
+      .switch {
+        position: relative;
+        width: 52px;
+        height: 30px;
+      }
+
+      .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .slider {
+        position: absolute;
+        inset: 0;
+        border-radius: 999px;
+        background: #cbd2d9;
+        transition: 0.2s ease;
+        cursor: pointer;
+      }
+
+      .slider::before {
+        content: "";
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        left: 3px;
+        top: 3px;
+        border-radius: 50%;
+        background: #ffffff;
+        transition: 0.2s ease;
+        box-shadow: 0 4px 10px rgba(15, 23, 42, 0.2);
+      }
+
+      input:checked + .slider {
+        background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+      }
+
+      input:checked + .slider::before {
+        transform: translateX(22px);
+      }
+
+      input[type="range"] {
+        width: 100%;
+        accent-color: var(--accent);
+      }
+
+      .footer {
+        margin-top: 14px;
+        font-size: 11px;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <main class="popup">
+      <h1>Hand Gesture Control</h1>
+      <p>Use your webcam to move a virtual cursor, scroll with an open palm, pinch to click, and swipe for browser navigation.</p>
+
+      <section class="card">
+        <div class="row">
+          <div class="label">
+            <strong>Gesture Control</strong>
+            <span>Start or stop camera-based control on the current page.</span>
+          </div>
+          <label class="switch">
+            <input id="enabledToggle" type="checkbox" />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="row">
+          <div class="label">
+            <strong>Status</strong>
+            <span id="statusText">Camera inactive</span>
+          </div>
+          <div class="status">
+            <span id="statusDot" class="dot"></span>
+            <span id="statusBadge">Idle</span>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="label">
+            <strong>Cursor Sensitivity</strong>
+            <span id="sensitivityValue">1.0x</span>
+          </div>
+        </div>
+        <div class="row">
+          <input id="sensitivityRange" type="range" min="0.6" max="2" step="0.1" />
+        </div>
+
+        <div class="row">
+          <div class="label">
+            <strong>Show Webcam Preview</strong>
+            <span>Display the video preview and hand landmarks overlay.</span>
+          </div>
+          <label class="switch">
+            <input id="previewToggle" type="checkbox" />
+            <span class="slider"></span>
+          </label>
+        </div>
+      </section>
+
+      <div class="footer">All processing runs locally in the browser. No hand data leaves your device.</div>
+    </main>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

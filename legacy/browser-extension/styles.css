@@ -1,0 +1,99 @@
+#gesture-extension-root {
+  all: initial;
+}
+
+#gesture-extension-root,
+#gesture-extension-root * {
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.gesture-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2147483646;
+}
+
+.gesture-preview-shell {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  width: 240px;
+  aspect-ratio: 4 / 3;
+  min-height: 180px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: rgba(15, 23, 42, 0.9);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  pointer-events: none;
+}
+
+.gesture-preview-shell.hidden {
+  display: none;
+}
+
+.gesture-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.gesture-canvas {
+  position: absolute;
+  inset: 0;
+}
+
+.gesture-preview-meta {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 12px;
+  background: linear-gradient(to top, rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0));
+  color: #f8fafc;
+  font-size: 11px;
+  letter-spacing: 0.03em;
+}
+
+.gesture-cursor {
+  position: fixed;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.92);
+  background: radial-gradient(circle at 35% 35%, #f97316, #b45309 72%);
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 8px rgba(249, 115, 22, 0.18);
+  pointer-events: none;
+  transition: box-shadow 0.12s ease, transform 0.08s linear;
+}
+
+.gesture-cursor.pinching {
+  box-shadow: 0 0 0 14px rgba(249, 115, 22, 0.28);
+  transform: translate(-50%, -50%) scale(0.9);
+}
+
+.gesture-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  max-width: min(320px, calc(100vw - 24px));
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.88);
+  color: #f8fafc;
+  font-size: 12px;
+  opacity: 0;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.gesture-toast.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-4px);
+}
