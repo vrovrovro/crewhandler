@@ -16,7 +16,7 @@ type SignUpFormValues = z.infer<typeof signUpSchema>;
 export default function SignUpPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo");
+  const redirectTo = searchParams?.get("redirectTo") ?? null;
   const [notice, setNotice] = useState<string | null>(null);
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
