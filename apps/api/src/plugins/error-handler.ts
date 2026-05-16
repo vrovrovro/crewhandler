@@ -11,8 +11,15 @@ export const errorHandlerPlugin = fp(async (app) => {
     }
 
     app.log.error(error);
-    return reply.status(error.statusCode ?? 500).send({
-      message: error.message || "Internal server error",
+
+    if (error instanceof Error) {
+      return reply.status((error as any).statusCode ?? 500).send({
+        message: error.message || "Internal server error",
+      });
+    }
+
+    return reply.status(500).send({
+      message: "Internal server error",
     });
   });
 });

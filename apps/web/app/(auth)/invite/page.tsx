@@ -3,7 +3,7 @@
 import { authContracts, createApiClient, settingsContracts, type UserRole } from "@acme/shared";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, Suspense } from "react";
 import { setCachedAuthState } from "../../../lib/auth-state";
 import { supabaseBrowser } from "../../../lib/supabase-browser";
 
@@ -64,7 +64,7 @@ const hydrateInviteSessionFromUrl = async (invitationId: string | null) => {
   };
 };
 
-export default function InvitePage() {
+function InvitePageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const invitationId = searchParams?.get("invitation") ?? null;
@@ -417,5 +417,13 @@ export default function InvitePage() {
         ) : null}
       </div>
     </div>
+  );
+}
+
+export default function InvitePage() {
+  return (
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center p-4 sm:p-6"><div className="panel w-full max-w-lg rounded-[32px] p-6 sm:p-8"><p className="text-sm text-slate-500">Loading...</p></div></div>}>
+      <InvitePageContent />
+    </Suspense>
   );
 }

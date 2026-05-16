@@ -5,6 +5,7 @@ import { loginSchema, type UserRole } from "@acme/shared";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { Suspense } from "react";
 import { GoogleIcon } from "../../../components/auth/google-icon";
 import { setCachedAuthState } from "../../../lib/auth-state";
 import { supabaseBrowser } from "../../../lib/supabase-browser";
@@ -12,7 +13,7 @@ import type { z } from "zod";
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
-export default function LoginPage() {
+function LoginPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams?.get("redirectTo") ?? null;
@@ -102,5 +103,13 @@ export default function LoginPage() {
         </p>
       </form>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center p-4 sm:p-6"><div className="panel w-full max-w-md rounded-[32px] p-6 sm:p-8"><p className="text-sm text-slate-500">Loading...</p></div></div>}>
+      <LoginPageContent />
+    </Suspense>
   );
 }

@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { signUpSchema } from "@acme/shared";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 import { GoogleIcon } from "../../../components/auth/google-icon";
@@ -13,7 +13,7 @@ import { supabaseBrowser } from "../../../lib/supabase-browser";
 
 type SignUpFormValues = z.infer<typeof signUpSchema>;
 
-export default function SignUpPage() {
+function SignUpPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams?.get("redirectTo") ?? null;
@@ -160,5 +160,13 @@ export default function SignUpPage() {
         </p>
       </form>
     </div>
+  );
+}
+
+export default function SignUpPage() {
+  return (
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center p-4 sm:p-6"><div className="panel w-full max-w-xl rounded-[32px] p-6 sm:p-8"><p className="text-sm text-slate-500">Loading...</p></div></div>}>
+      <SignUpPageContent />
+    </Suspense>
   );
 }
