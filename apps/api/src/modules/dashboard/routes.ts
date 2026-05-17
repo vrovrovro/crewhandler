@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { createSupabaseAdmin } from "@acme/db";
 import { dashboardContracts } from "@acme/shared";
-import { requirePermission } from "../../lib/auth";
+import { requirePermission } from "../../lib/auth.js";
 
 const admin = createSupabaseAdmin();
 

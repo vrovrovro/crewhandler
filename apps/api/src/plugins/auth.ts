@@ -1,7 +1,7 @@
 import fp from "fastify-plugin";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import type { AuthUser } from "../lib/auth";
-import { authenticateRequest } from "../lib/auth";
+import type { AuthUser } from "../lib/auth.js";
+import { authenticateRequest } from "../lib/auth.js";
 
 declare module "fastify" {
   interface FastifyRequest {

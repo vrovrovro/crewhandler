@@ -1,5 +1,5 @@
-import { buildServer } from "./server";
-import { env } from "./lib/env";
+import { buildServer } from "./server.js";
+import { env } from "./lib/env.js";
 
 const start = async () => {
   const app = await buildServer();

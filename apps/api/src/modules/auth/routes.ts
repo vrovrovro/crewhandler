@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { createSupabaseAdmin } from "@acme/db";
 import { authContracts, settingsContracts, type UserRole } from "@acme/shared";
-import { authenticateSupabaseSession, setCachedAuthUser } from "../../lib/auth";
+import { authenticateSupabaseSession, setCachedAuthUser } from "../../lib/auth.js";
 
 const admin = createSupabaseAdmin();
 

@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { createSupabaseAdmin } from "@acme/db";
 import { canTransitionInterventionStatus, interventionContracts } from "@acme/shared";
-import { requirePermission } from "../../lib/auth";
+import { requirePermission } from "../../lib/auth.js";
 
 const admin = createSupabaseAdmin();
 const ATTACHMENT_BUCKET = "job-attachments";

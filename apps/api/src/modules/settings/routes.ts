@@ -1,8 +1,8 @@
 import type { FastifyInstance } from "fastify";
 import { createSupabaseAdmin } from "@acme/db";
 import { settingsContracts } from "@acme/shared";
-import { env } from "../../lib/env";
-import { requirePermission } from "../../lib/auth";
+import { env } from "../../lib/env.js";
+import { requirePermission } from "../../lib/auth.js";
 
 const admin = createSupabaseAdmin();
 
