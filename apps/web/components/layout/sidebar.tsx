@@ -57,7 +57,7 @@ export function Sidebar({
             <div>
               <div className="inline-flex items-center gap-3 rounded-full bg-slate-100 px-3 py-2 text-xs uppercase tracking-[0.3em] text-slate-500">
                 <Wrench className="h-3.5 w-3.5" />
-                {!collapsed ? "FieldFlo" : null}
+                {!collapsed ? "Crew Handler" : null}
               </div>
               {!collapsed ? (
                 <>
