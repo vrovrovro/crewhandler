@@ -5,17 +5,14 @@ import { Eye, LayoutGrid, List, Pencil, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import {
   canTransitionInterventionStatus,
-  clientContracts,
   clientListResponseSchema,
   createInterventionSchema,
-  interventionContracts,
   interventionListResponseSchema,
   interventionStatuses,
   settingsContracts,
   settingsOverviewSchema,
 } from "@acme/shared";
-import { createAuthedApi, apiContracts } from "../../../lib/api";
-import { getAccessToken } from "../../../lib/session-client";
+import { createAuthedApi } from "../../../lib/api";
 import { InterventionForm } from "../../../components/forms/intervention-form";
 import { Modal } from "../../../components/overlay/modal";
 import { DataTable } from "../../../components/tables/data-table";
@@ -25,6 +22,15 @@ import { z } from "zod";
 import { readViewCache, writeViewCache } from "../../../lib/view-cache";
 import { peekAuthState, resolveAuthState } from "../../../lib/auth-state";
 import type { InterventionStatus, UserRole } from "@acme/shared";
+import { listClientsDirect } from "../../../lib/supabase-clients";
+import {
+  createInterventionDirect,
+  deleteInterventionDirect,
+  listInterventionsDirect,
+  updateInterventionDirect,
+  updateInterventionStatusDirect,
+} from "../../../lib/supabase-interventions";
+import { getAccessToken } from "../../../lib/session-client";
 
 type InterventionListResponse = z.infer<typeof interventionListResponseSchema>;
 type ClientListResponse = z.infer<typeof clientListResponseSchema>;
@@ -87,12 +93,14 @@ export default function InterventionsPage() {
 
   const load = async () => {
     try {
-      const api = createAuthedApi(getAccessToken);
       const authState = await resolveAuthState();
       setRole(authState.role);
 
-      const interventionsResult = await api.request(apiContracts.interventions, {
-        query: { page: 1, pageSize: 50, sortBy: "scheduledAt", sortOrder: "asc" },
+      const interventionsResult = await listInterventionsDirect({
+        page: 1,
+        pageSize: 50,
+        sortBy: "scheduledAt",
+        sortOrder: "asc",
       });
 
       if (authState.role === "USER") {
@@ -104,9 +112,13 @@ export default function InterventionsPage() {
         return;
       }
 
+      const api = createAuthedApi(getAccessToken);
       const [clientsResult, settingsOverview] = await Promise.all([
-        api.request(clientContracts.list, {
-          query: { page: 1, pageSize: 100, sortBy: "createdAt", sortOrder: "desc" },
+        listClientsDirect({
+          page: 1,
+          pageSize: 100,
+          sortBy: "createdAt",
+          sortOrder: "desc",
         }),
         api.request(settingsContracts.overview, {}),
       ]);
@@ -151,21 +163,14 @@ export default function InterventionsPage() {
   );
 
   const createIntervention = async (values: CreateInterventionInput) => {
-    const api = createAuthedApi(getAccessToken);
-    await api.request(interventionContracts.create, {
-      body: values,
-    });
+    await createInterventionDirect(values);
     await load();
     setCreateOpen(false);
   };
 
   const updateIntervention = async (values: CreateInterventionInput) => {
     if (!editIntervention) return;
-    const api = createAuthedApi(getAccessToken);
-    await api.request(interventionContracts.update, {
-      pathParams: { id: editIntervention.id },
-      body: values,
-    });
+    await updateInterventionDirect(editIntervention.id, values);
     await load();
     setEditIntervention(null);
   };
@@ -180,11 +185,7 @@ export default function InterventionsPage() {
       throw new Error(`Interventions cannot move from ${current.status} to ${status}.`);
     }
 
-    const api = createAuthedApi(getAccessToken);
-    await api.request(interventionContracts.updateStatus, {
-      pathParams: { id: interventionId },
-      body: { status },
-    });
+    await updateInterventionStatusDirect(interventionId, current.status, status);
     await load();
   };
 
@@ -192,10 +193,7 @@ export default function InterventionsPage() {
     const confirmed = window.confirm("Delete this intervention and every linked note, attachment, and invoice?");
     if (!confirmed) return;
 
-    const api = createAuthedApi(getAccessToken);
-    await api.request(interventionContracts.remove, {
-      pathParams: { id },
-    });
+    await deleteInterventionDirect(id);
     await load();
   };
 
@@ -236,7 +234,7 @@ export default function InterventionsPage() {
   }
 
   if (!data) {
-    return <StateCard title="Loading interventions" description="Fetching interventions from the API layer." />;
+    return <StateCard title="Loading interventions" description="Fetching interventions from Supabase." />;
   }
 
   return (

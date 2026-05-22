@@ -1,17 +1,17 @@
 "use client";
 
-import { createInvoiceSchema, interventionContracts, interventionListResponseSchema, invoiceContracts, invoiceListResponseSchema } from "@acme/shared";
+import { createInvoiceSchema, interventionListResponseSchema, invoiceListResponseSchema } from "@acme/shared";
 import { z } from "zod";
 import { useEffect, useState } from "react";
 import { Pencil, Plus, Trash2 } from "lucide-react";
-import { createAuthedApi } from "../../../lib/api";
-import { getAccessToken } from "../../../lib/session-client";
 import { InvoiceForm } from "../../../components/forms/invoice-form";
 import { Modal } from "../../../components/overlay/modal";
 import { DataTable } from "../../../components/tables/data-table";
 import { StateCard } from "../../../components/feedback/state-card";
 import { MobileKebabMenu } from "../../../components/menus/mobile-kebab-menu";
 import { readViewCache, writeViewCache } from "../../../lib/view-cache";
+import { listInterventionsDirect } from "../../../lib/supabase-interventions";
+import { createInvoiceDirect, deleteInvoiceDirect, listInvoicesDirect, updateInvoiceDirect } from "../../../lib/supabase-invoices";
 
 type InvoiceListResponse = z.infer<typeof invoiceListResponseSchema>;
 type InterventionListResponse = z.infer<typeof interventionListResponseSchema>;
@@ -27,13 +27,16 @@ export default function InvoicesPage() {
 
   const load = async () => {
     try {
-      const api = createAuthedApi(getAccessToken);
       const [invoicesResult, interventionsResult] = await Promise.all([
-        api.request(invoiceContracts.list, {
-          query: { page: 1, pageSize: 20 },
+        listInvoicesDirect({
+          page: 1,
+          pageSize: 20,
         }),
-        api.request(interventionContracts.list, {
-          query: { page: 1, pageSize: 100, sortBy: "scheduledAt", sortOrder: "asc" },
+        listInterventionsDirect({
+          page: 1,
+          pageSize: 100,
+          sortBy: "scheduledAt",
+          sortOrder: "asc",
         }),
       ]);
       setData(invoicesResult);
@@ -51,21 +54,14 @@ export default function InvoicesPage() {
   }, []);
 
   const createInvoice = async (values: CreateInvoiceInput) => {
-    const api = createAuthedApi(getAccessToken);
-    await api.request(invoiceContracts.create, {
-      body: values,
-    });
+    await createInvoiceDirect(values);
     await load();
     setCreateOpen(false);
   };
 
   const updateInvoice = async (values: CreateInvoiceInput) => {
     if (!editInvoice) return;
-    const api = createAuthedApi(getAccessToken);
-    await api.request(invoiceContracts.update, {
-      pathParams: { id: editInvoice.id },
-      body: values,
-    });
+    await updateInvoiceDirect(editInvoice.id, values);
     await load();
     setEditInvoice(null);
   };
@@ -74,10 +70,7 @@ export default function InvoicesPage() {
     const confirmed = window.confirm("Delete this invoice permanently?");
     if (!confirmed) return;
 
-    const api = createAuthedApi(getAccessToken);
-    await api.request(invoiceContracts.remove, {
-      pathParams: { id },
-    });
+    await deleteInvoiceDirect(id);
     await load();
   };
 
@@ -144,7 +137,7 @@ export default function InvoicesPage() {
           ])}
         />
       ) : (
-        <StateCard title="Loading invoices" description="Fetching invoice data from the API." />
+        <StateCard title="Loading invoices" description="Fetching invoice data from Supabase." />
       )}
       <Modal
         open={createOpen}

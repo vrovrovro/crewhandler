@@ -3,9 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Eye, Pencil, Plus, Trash2 } from "lucide-react";
-import { clientContracts, clientListResponseSchema, createClientSchema } from "@acme/shared";
-import { createAuthedApi, apiContracts } from "../../../lib/api";
-import { getAccessToken } from "../../../lib/session-client";
+import { clientListResponseSchema, createClientSchema } from "@acme/shared";
 import { ClientForm } from "../../../components/forms/client-form";
 import { Modal } from "../../../components/overlay/modal";
 import { DataTable } from "../../../components/tables/data-table";
@@ -13,6 +11,7 @@ import { StateCard } from "../../../components/feedback/state-card";
 import { MobileKebabMenu } from "../../../components/menus/mobile-kebab-menu";
 import { z } from "zod";
 import { readViewCache, writeViewCache } from "../../../lib/view-cache";
+import { createClientDirect, deleteClientDirect, listClientsDirect, updateClientDirect } from "../../../lib/supabase-clients";
 
 type ClientListResponse = z.infer<typeof clientListResponseSchema>;
 type ClientItem = ClientListResponse["items"][number];
@@ -26,9 +25,11 @@ export default function ClientsPage() {
 
   const load = async () => {
     try {
-      const api = createAuthedApi(getAccessToken);
-      const result = await api.request(apiContracts.clients, {
-        query: { page: 1, pageSize: 20, sortBy: "createdAt", sortOrder: "desc" },
+      const result = await listClientsDirect({
+        page: 1,
+        pageSize: 20,
+        sortBy: "createdAt",
+        sortOrder: "desc",
       });
       setData(result);
       writeViewCache("clients", result);
@@ -43,21 +44,14 @@ export default function ClientsPage() {
   }, []);
 
   const createClient = async (values: CreateClientInput) => {
-    const api = createAuthedApi(getAccessToken);
-    await api.request(clientContracts.create, {
-      body: values,
-    });
+    await createClientDirect(values);
     await load();
     setCreateOpen(false);
   };
 
   const updateClient = async (values: CreateClientInput) => {
     if (!editClient) return;
-    const api = createAuthedApi(getAccessToken);
-    await api.request(clientContracts.update, {
-      pathParams: { id: editClient.id },
-      body: values,
-    });
+    await updateClientDirect(editClient.id, values);
     await load();
     setEditClient(null);
   };
@@ -66,10 +60,7 @@ export default function ClientsPage() {
     const confirmed = window.confirm("Delete this client and every linked job/invoice record?");
     if (!confirmed) return;
 
-    const api = createAuthedApi(getAccessToken);
-    await api.request(clientContracts.remove, {
-      pathParams: { id },
-    });
+    await deleteClientDirect(id);
     await load();
   };
 
@@ -144,7 +135,7 @@ export default function ClientsPage() {
           ])}
         />
       ) : (
-        <StateCard title="Loading clients" description="Fetching organization-scoped client records from the API." />
+        <StateCard title="Loading clients" description="Fetching organization-scoped client records from Supabase." />
       )}
       <Modal
         open={createOpen}

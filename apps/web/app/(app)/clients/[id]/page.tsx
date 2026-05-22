@@ -3,12 +3,11 @@
 import { use, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { clientContracts, clientDetailSchema } from "@acme/shared";
+import { clientDetailSchema } from "@acme/shared";
 import { ArrowLeft, ExternalLink, FileText, MapPin, Phone, UserRound } from "lucide-react";
 import { z } from "zod";
-import { createAuthedApi } from "../../../../lib/api";
-import { getAccessToken } from "../../../../lib/session-client";
 import { StateCard } from "../../../../components/feedback/state-card";
+import { getClientDetailDirect } from "../../../../lib/supabase-clients";
 
 type ClientDetail = z.infer<typeof clientDetailSchema>;
 
@@ -27,10 +26,7 @@ export default function ClientDetailPage({ params }: { params: Promise<{ id: str
 
   const load = async (clientId: string) => {
     try {
-      const api = createAuthedApi(getAccessToken);
-      const result = await api.request(clientContracts.detail, {
-        pathParams: { id: clientId },
-      });
+      const result = await getClientDetailDirect(clientId);
       setData(result);
       setError(null);
     } catch (loadError) {

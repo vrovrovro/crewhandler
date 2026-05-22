@@ -18,7 +18,7 @@ export function DataTable({
   mobileContent?: ReactNode;
 }) {
   return (
-    <section className="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_12px_40px_rgba(15,23,42,0.05)]">
+    <section className="rounded-[28px] border border-slate-200 bg-white shadow-[0_12px_40px_rgba(15,23,42,0.05)]">
       <div className="flex flex-row justify-between border-b border-slate-200 px-5 py-5 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <h2 className="text-lg font-semibold text-slate-950">{title}</h2>

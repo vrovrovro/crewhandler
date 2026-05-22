@@ -1,7 +1,6 @@
 "use client";
 
 import { use, useEffect, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { interventionContracts, interventionDetailSchema, uploadContracts } from "@acme/shared";
 import { ArrowLeft, Eye, ImageIcon, Trash2, Upload } from "lucide-react";
@@ -12,6 +11,7 @@ import { supabaseBrowser } from "../../../../lib/supabase-browser";
 import { AttachmentForm } from "../../../../components/forms/attachment-form";
 import { Modal } from "../../../../components/overlay/modal";
 import { StateCard } from "../../../../components/feedback/state-card";
+import { getInterventionDetailDirect } from "../../../../lib/supabase-interventions";
 
 type InterventionDetail = z.infer<typeof interventionDetailSchema>;
 
@@ -24,10 +24,7 @@ export default function InterventionDetailPage({ params }: { params: Promise<{ i
 
   const load = async (interventionId: string) => {
     try {
-      const api = createAuthedApi(getAccessToken);
-      const result = await api.request(interventionContracts.detail, {
-        pathParams: { id: interventionId },
-      });
+      const result = await getInterventionDetailDirect(interventionId);
       setData(result);
       setError(null);
     } catch (loadError) {
@@ -160,10 +157,11 @@ export default function InterventionDetailPage({ params }: { params: Promise<{ i
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               {data.attachments.length ? (
                 data.attachments.map((attachment) => (
-                  <Link
+                  <a
                     key={attachment.id}
                     href={attachment.fileUrl}
                     target="_blank"
+                    rel="noreferrer"
                     className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50"
                   >
                     {attachment.kind === "PHOTO" ? (
@@ -194,7 +192,7 @@ export default function InterventionDetailPage({ params }: { params: Promise<{ i
                         </button>
                       </div>
                     </div>
-                  </Link>
+                  </a>
                 ))
               ) : (
                 <p className="text-sm text-slate-500">No attachments uploaded yet.</p>

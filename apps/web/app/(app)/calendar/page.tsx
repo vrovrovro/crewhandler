@@ -1,10 +1,8 @@
 "use client";
 
 import {
-  clientContracts,
   clientListResponseSchema,
   createInterventionSchema,
-  interventionContracts,
   interventionListResponseSchema,
   settingsContracts,
   settingsOverviewSchema,
@@ -12,7 +10,7 @@ import {
 import { z } from "zod";
 import { useEffect, useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight, GripVertical } from "lucide-react";
-import { createAuthedApi, apiContracts } from "../../../lib/api";
+import { createAuthedApi } from "../../../lib/api";
 import { getAccessToken } from "../../../lib/session-client";
 import { StateCard } from "../../../components/feedback/state-card";
 import { readViewCache, writeViewCache } from "../../../lib/view-cache";
@@ -21,6 +19,8 @@ import { AppSelect } from "../../../components/inputs/app-select";
 import { Modal } from "../../../components/overlay/modal";
 import { peekAuthState, resolveAuthState } from "../../../lib/auth-state";
 import type { UserRole } from "@acme/shared";
+import { listClientsDirect } from "../../../lib/supabase-clients";
+import { listInterventionsDirect, updateInterventionDirect } from "../../../lib/supabase-interventions";
 
 type InterventionListResponse = z.infer<typeof interventionListResponseSchema>;
 type ClientListResponse = z.infer<typeof clientListResponseSchema>;
@@ -74,12 +74,14 @@ export default function CalendarPage() {
 
   const load = async () => {
     try {
-      const api = createAuthedApi(getAccessToken);
       const authState = await resolveAuthState();
       setRole(authState.role);
 
-      const result = await api.request(apiContracts.interventions, {
-        query: { page: 1, pageSize: 100, sortBy: "scheduledAt", sortOrder: "asc" },
+      const result = await listInterventionsDirect({
+        page: 1,
+        pageSize: 100,
+        sortBy: "scheduledAt",
+        sortOrder: "asc",
       });
 
       if (authState.role === "USER") {
@@ -91,9 +93,13 @@ export default function CalendarPage() {
         return;
       }
 
+      const api = createAuthedApi(getAccessToken);
       const [clientResult, settingsOverview] = await Promise.all([
-        api.request(clientContracts.list, {
-          query: { page: 1, pageSize: 100, sortBy: "createdAt", sortOrder: "desc" },
+        listClientsDirect({
+          page: 1,
+          pageSize: 100,
+          sortBy: "createdAt",
+          sortOrder: "desc",
         }),
         api.request(settingsContracts.overview, {}),
       ]);
@@ -149,11 +155,7 @@ export default function CalendarPage() {
 
   const saveScheduling = async (values: CreateInterventionInput) => {
     if (!editIntervention) return;
-    const api = createAuthedApi(getAccessToken);
-    await api.request(interventionContracts.update, {
-      pathParams: { id: editIntervention.id },
-      body: values,
-    });
+    await updateInterventionDirect(editIntervention.id, values);
     await load();
     setEditIntervention(null);
   };
@@ -166,21 +168,17 @@ export default function CalendarPage() {
     const moved = new Date(nextDate);
     moved.setHours(scheduled.getHours(), scheduled.getMinutes(), 0, 0);
 
-    const api = createAuthedApi(getAccessToken);
-    await api.request(interventionContracts.update, {
-      pathParams: { id: intervention.id },
-      body: {
-        clientId: intervention.clientId,
-        assignedTechnicianId: intervention.assignedTechnicianId ?? null,
-        title: intervention.title,
-        description: intervention.description ?? null,
-        status: intervention.status,
-        priority: intervention.priority,
-        scheduledAt: moved.toISOString(),
-        dueDate: intervention.dueDate ?? null,
-        location: intervention.location ?? null,
-        notes: intervention.notes ?? null,
-      },
+    await updateInterventionDirect(intervention.id, {
+      clientId: intervention.clientId,
+      assignedTechnicianId: intervention.assignedTechnicianId ?? null,
+      title: intervention.title,
+      description: intervention.description ?? null,
+      status: intervention.status,
+      priority: intervention.priority,
+      scheduledAt: moved.toISOString(),
+      dueDate: intervention.dueDate ?? null,
+      location: intervention.location ?? null,
+      notes: intervention.notes ?? null,
     });
     await load();
   };
